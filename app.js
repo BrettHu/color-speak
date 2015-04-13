@@ -1,14 +1,10 @@
-module ColorSpeak {
-    export function getColors() {
+var ColorSpeak;
+(function (ColorSpeak) {
+    function getColors() {
         return rawData;
     }
-
-    interface ColorEntry {
-        name : string;
-        hexCode: string;
-    }
-
-    var rawData : ColorEntry[] = [
+    ColorSpeak.getColors = getColors;
+    var rawData = [
         // I love XKCD: http://blog.xkcd.com/2010/05/03/color-survey-results/
         // License: http://creativecommons.org/publicdomain/zero/1.0/
         { name: "cloudy blue", hexCode: "#acc2d9" },
@@ -961,17 +957,18 @@ module ColorSpeak {
         { name: "green", hexCode: "#15b01a" },
         { name: "purple", hexCode: "#7e1e9c" }
     ];
-}
-
-module ColorSpeak.App {
-    window.addEventListener("load", function() {
-        var colorSelect = <HTMLSelectElement>document.getElementById('colorSelect');
-        var colorText = <HTMLInputElement>document.getElementById('colorText');
-
-        var colorsForSelect = getColors().reduce(function(result, item) {
-            return result + "<option value='" + item.name + "'>" + item.name + "</option>";
-        }, "");
-
-        colorSelect.innerHTML = colorsForSelect;
-    });
-}
+})(ColorSpeak || (ColorSpeak = {}));
+var ColorSpeak;
+(function (ColorSpeak) {
+    var App;
+    (function (App) {
+        window.addEventListener("load", function () {
+            var colorSelect = document.getElementById('colorSelect');
+            var colorText = document.getElementById('colorText');
+            var colorsForSelect = ColorSpeak.getColors().reduce(function (result, item) {
+                return result + "<option value='" + item.name + "'>" + item.name + "</option>";
+            }, "");
+            colorSelect.innerHTML = colorsForSelect;
+        });
+    })(App = ColorSpeak.App || (ColorSpeak.App = {}));
+})(ColorSpeak || (ColorSpeak = {}));
