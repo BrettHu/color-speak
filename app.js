@@ -1,7 +1,35 @@
 var ColorSpeak;
 (function (ColorSpeak) {
-    function getColors() {
-        return rawData;
+    var App;
+    (function (App) {
+        function renderItem(item) {
+            return "<div class='item'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode + "</div></div>";
+        }
+        window.addEventListener("load", function () {
+            var colorSelect = document.getElementById('colorSelect');
+            var colorText = document.getElementById('colorText');
+            function updateDisplay(match) {
+                var colorsForSelect = ColorSpeak.getColors(match).reduce(function (result, item) {
+                    return result + renderItem(item);
+                }, "");
+                colorSelect.innerHTML = colorsForSelect;
+            }
+            updateDisplay();
+            colorText.onkeyup = function (evt) {
+                updateDisplay(colorText.value);
+            };
+        });
+    })(App = ColorSpeak.App || (ColorSpeak.App = {}));
+})(ColorSpeak || (ColorSpeak = {}));
+var ColorSpeak;
+(function (ColorSpeak) {
+    function getColors(match) {
+        if (match) {
+            return rawData.filter(function (item) { return item.name.indexOf(match.toLowerCase()) != -1; });
+        }
+        else {
+            return rawData;
+        }
     }
     ColorSpeak.getColors = getColors;
     var rawData = [
@@ -957,18 +985,4 @@ var ColorSpeak;
         { name: "green", hexCode: "#15b01a" },
         { name: "purple", hexCode: "#7e1e9c" }
     ];
-})(ColorSpeak || (ColorSpeak = {}));
-var ColorSpeak;
-(function (ColorSpeak) {
-    var App;
-    (function (App) {
-        window.addEventListener("load", function () {
-            var colorSelect = document.getElementById('colorSelect');
-            var colorText = document.getElementById('colorText');
-            var colorsForSelect = ColorSpeak.getColors().reduce(function (result, item) {
-                return result + "<option value='" + item.name + "'>" + item.name + "</option>";
-            }, "");
-            colorSelect.innerHTML = colorsForSelect;
-        });
-    })(App = ColorSpeak.App || (ColorSpeak.App = {}));
 })(ColorSpeak || (ColorSpeak = {}));

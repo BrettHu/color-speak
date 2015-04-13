@@ -1,9 +1,37 @@
-module ColorSpeak {
-    export function getColors() {
-        return rawData;
+module ColorSpeak.App {
+    function renderItem(item : ColorEntry) {
+        return "<div class='item'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode +"</div></div>";
     }
 
-    interface ColorEntry {
+    window.addEventListener("load", function() {
+        var colorSelect = <HTMLSelectElement>document.getElementById('colorSelect');
+        var colorText = <HTMLInputElement>document.getElementById('colorText');
+
+        function updateDisplay(match? : string) {
+            var colorsForSelect = getColors(match).reduce(function(result, item) {
+                return result + renderItem(item);
+            }, "");
+            colorSelect.innerHTML = colorsForSelect;
+        }
+        updateDisplay();
+
+        colorText.onkeyup = (evt) => {
+            updateDisplay(colorText.value);
+        };
+    });
+}
+
+module ColorSpeak {
+    export function getColors(match? : string) {
+        if (match) {
+            return rawData.filter(item=> item.name.indexOf(match.toLowerCase()) != -1);
+        }
+        else {
+            return rawData;
+        }
+    }
+
+    export interface ColorEntry {
         name : string;
         hexCode: string;
     }
@@ -963,15 +991,3 @@ module ColorSpeak {
     ];
 }
 
-module ColorSpeak.App {
-    window.addEventListener("load", function() {
-        var colorSelect = <HTMLSelectElement>document.getElementById('colorSelect');
-        var colorText = <HTMLInputElement>document.getElementById('colorText');
-
-        var colorsForSelect = getColors().reduce(function(result, item) {
-            return result + "<option value='" + item.name + "'>" + item.name + "</option>";
-        }, "");
-
-        colorSelect.innerHTML = colorsForSelect;
-    });
-}

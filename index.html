@@ -1,11 +1,42 @@
 <html>
 <head>
 <script src='app.js' type='text/jscript'></script>
+<style>
+body {
+	font-family: Segoe UI;
+}
+#colorSelect {
+	height: 500px;
+	overflow-x: auto;
+}
+#colorSelect .item {
+	height: 75px;
+	display: flex;
+}
+#colorSelect .item .swatch {
+	height: 75px;
+	width: 75px;
+	flex: auto;
+	flex-grow:0;
+}
+#colorSelect .item .name {
+	flex: 1;
+	flex-grow:1;
+	font-family: Segoe UI;
+	font-size: 28;
+}
+#colorText {
+	font-family: Segoe UI;
+	font-size: 28;
+}
+</style>
 </head>
 <body>
-	<h1>welcome to color-speak</h1>
+	<h1>949 colors from <a href="http://blog.xkcd.com/2010/05/03/color-survey-results/">XKCD</a></h1>
 
+
+	<span>Type a color to filter:</span>
 	<input type='text' id='colorText' />
-	<select id='colorSelect'></select>
+	<div id='colorSelect'></div>
 </body>
 </html>
