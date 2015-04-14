@@ -8,11 +8,14 @@ var ColorSpeak;
         window.addEventListener("load", function () {
             var colorSelect = document.getElementById('colorSelect');
             var colorText = document.getElementById('colorText');
+            var summary = document.getElementById('summary');
             function updateDisplay(match) {
-                var colorsForSelect = ColorSpeak.getColors(match).reduce(function (result, item) {
+                var colors = ColorSpeak.getColors(match);
+                var colorsForSelect = colors.reduce(function (result, item) {
                     return result + renderItem(item);
                 }, "");
                 colorSelect.innerHTML = colorsForSelect;
+                summary.textContent = colors.length + ' of 949 matched';
             }
             updateDisplay();
             colorText.onkeyup = function (evt) {
@@ -33,8 +36,6 @@ var ColorSpeak;
     }
     ColorSpeak.getColors = getColors;
     var rawData = [
-        // I love XKCD: http://blog.xkcd.com/2010/05/03/color-survey-results/
-        // License: http://creativecommons.org/publicdomain/zero/1.0/
         { name: "cloudy blue", hexCode: "#acc2d9" },
         { name: "dark pastel green", hexCode: "#56ae57" },
         { name: "dust", hexCode: "#b2996e" },

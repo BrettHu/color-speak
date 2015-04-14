@@ -6,12 +6,15 @@ module ColorSpeak.App {
     window.addEventListener("load", function() {
         var colorSelect = <HTMLSelectElement>document.getElementById('colorSelect');
         var colorText = <HTMLInputElement>document.getElementById('colorText');
+        var summary = <HTMLInputElement>document.getElementById('summary');
 
         function updateDisplay(match? : string) {
-            var colorsForSelect = getColors(match).reduce(function(result, item) {
+            var colors = getColors(match);
+            var colorsForSelect = colors.reduce(function(result, item) {
                 return result + renderItem(item);
             }, "");
             colorSelect.innerHTML = colorsForSelect;
+            summary.textContent = colors.length + ' of 949 matched';
         }
         updateDisplay();
 
