@@ -9,6 +9,7 @@ html,body {
     margin:0px;
     overflow: hidden;
 }
+/* ----- root and first children (top+bottom stack header+container) ----- */
 #content {
     height: 100%;
     margin-left: 25px;
@@ -19,6 +20,31 @@ html,body {
 #header {
     flex: initial;
 }
+#container {
+    flex: 1;
+}
+
+/* ----- container (left+right stack) ----- */
+#container {
+    display: flex;
+    flex-direction: row;
+}
+#leftContainer {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+}
+#rightContainer {
+    flex:1;
+    display: flex;
+}
+
+/* ----- leftContainer (top+bottom) ----- */
+#leftContainer {
+    display: flex;
+    flex-direction: column;
+}
+
 #selectScroller {
     overflow-x: auto;
     flex: 1;
@@ -61,9 +87,16 @@ html,body {
             <span>Type a color to filter:</span>
             <input type='text' id='colorText' />
         </div>
-        <div id='summary'></div>
-        <div id='selectScroller'>
-            <div id='colorSelect'></div>
+        <div id='container'>
+            <div id='leftContainer'>
+                <div id='summary'></div>
+                <div id='selectScroller'>
+                    <div id='colorSelect'></div>
+                </div>
+            </div>
+            <div id='rightContainer'>
+
+            </div>
         </div>
     </div>
 </body>

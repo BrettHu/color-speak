@@ -3,6 +3,10 @@ module ColorSpeak.App {
         return "<div class='item'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode +"</div></div>";
     }
 
+    // UNDONE: make list items selectable and keyboard navigable
+
+    // UNDONE: have this be a picker -> you select a color (one for foreground one for background)
+
     window.addEventListener("load", function() {
         var colorSelect = <HTMLSelectElement>document.getElementById('colorSelect');
         var colorText = <HTMLInputElement>document.getElementById('colorText');
