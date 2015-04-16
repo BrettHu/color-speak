@@ -9,12 +9,14 @@ var ColorSpeak;
             var colorSelect = document.getElementById('colorSelect');
             var colorText = document.getElementById('colorText');
             var summary = document.getElementById('summary');
+            var foreground = document.getElementById('foreground');
             function updateDisplay(match) {
                 var colors = ColorSpeak.getColors(match);
                 var colorsForSelect = colors.reduce(function (result, item) {
                     return result + renderItem(item);
                 }, "");
                 colorSelect.innerHTML = colorsForSelect;
+                Array.prototype.forEach.call(colorSelect.children, function (item) { return makeListItem(item, [colorSelect], function (e) { foreground.style.backgroundColor = (e.querySelector(".swatch")).style.backgroundColor; }); });
                 summary.textContent = colors.length + ' of 949 matched';
             }
             updateDisplay();
@@ -22,6 +24,68 @@ var ColorSpeak;
                 updateDisplay(colorText.value);
             };
         });
+        function makeListItem(element, listScope, onselected) {
+            var pointerDown = false;
+            element.tabIndex = 0;
+            element.classList.add("listitem");
+            function findAllListItems() {
+                var result = [];
+                Array.prototype.forEach.call(listScope, function (item) { return Array.prototype.forEach.call(item.querySelectorAll(".listitem"), function (i2) { return result.push(i2); }); });
+                return result;
+            }
+            function select() {
+                if (!element.classList.contains("selected")) {
+                    findAllListItems().forEach(function (elem) { return elem.classList.remove("selected"); });
+                    element.classList.add("selected");
+                    onselected && onselected(element);
+                }
+            }
+            element.addEventListener("keydown", function (ev) {
+                switch (ev.keyCode) {
+                    case 35:
+                        var items = findAllListItems();
+                        items[items.length - 1].focus();
+                        ev.preventDefault();
+                        break;
+                    case 36:
+                        var items = findAllListItems();
+                        items[0].focus();
+                        ev.preventDefault();
+                        break;
+                    case 37: // left
+                    case 38:
+                        var items = findAllListItems();
+                        var found = items.indexOf(element);
+                        if (found > 0) {
+                            items[found - 1].focus();
+                        }
+                        ev.preventDefault();
+                        break;
+                    case 39: // right
+                    case 40:
+                        var items = findAllListItems();
+                        var found = items.indexOf(element);
+                        if (found < items.length - 1) {
+                            items[found + 1].focus();
+                        }
+                        ev.preventDefault();
+                        break;
+                }
+            }, false);
+            element.addEventListener("focus", function (ev) {
+                select();
+            });
+            element.addEventListener("pointerdown", function (ev) {
+                pointerDown = true;
+                element.focus();
+            }, true);
+            element.addEventListener("pointerup", function (ev) {
+                if (pointerDown) {
+                    select();
+                }
+            }, true);
+        }
+        ;
     })(App = ColorSpeak.App || (ColorSpeak.App = {}));
 })(ColorSpeak || (ColorSpeak = {}));
 var ColorSpeak;
@@ -36,6 +100,8 @@ var ColorSpeak;
     }
     ColorSpeak.getColors = getColors;
     var rawData = [
+        // I love XKCD: http://blog.xkcd.com/2010/05/03/color-survey-results/
+        // License: http://creativecommons.org/publicdomain/zero/1.0/
         { name: "cloudy blue", hexCode: "#acc2d9" },
         { name: "dark pastel green", hexCode: "#56ae57" },
         { name: "dust", hexCode: "#b2996e" },

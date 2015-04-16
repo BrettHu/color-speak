@@ -56,6 +56,13 @@ html,body {
 #colorSelect .item {
     height: 75px;
     display: flex;
+    background: white;
+    color: black;
+    transition: background .5s, color .5s;
+}
+#colorSelect .item.selected {
+    background: blue;
+    color: white;
 }
 #colorSelect .item .swatch {
     height: 75px;
@@ -72,6 +79,12 @@ html,body {
 #colorText {
     font-family: Segoe UI;
     font-size: 28;
+}
+#foreground {
+    width: 150px;
+    height: 150px;
+    border: 3px solid black;
+    margin: 5px;
 }
 @media (max-width: 500px) {
     #colorSelect .item .name {
@@ -95,7 +108,7 @@ html,body {
                 </div>
             </div>
             <div id='rightContainer'>
-
+                <div id='foreground'></div>
             </div>
         </div>
     </div>

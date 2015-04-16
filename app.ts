@@ -3,14 +3,11 @@ module ColorSpeak.App {
         return "<div class='item'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode +"</div></div>";
     }
 
-    // UNDONE: make list items selectable and keyboard navigable
-
-    // UNDONE: have this be a picker -> you select a color (one for foreground one for background)
-
     window.addEventListener("load", function() {
         var colorSelect = <HTMLSelectElement>document.getElementById('colorSelect');
         var colorText = <HTMLInputElement>document.getElementById('colorText');
         var summary = <HTMLInputElement>document.getElementById('summary');
+        var foreground = <HTMLElement>document.getElementById('foreground');
 
         function updateDisplay(match? : string) {
             var colors = getColors(match);
@@ -18,6 +15,13 @@ module ColorSpeak.App {
                 return result + renderItem(item);
             }, "");
             colorSelect.innerHTML = colorsForSelect;
+            Array.prototype.forEach.call(colorSelect.children,
+                (item) => makeListItem(
+                    item,
+                    [colorSelect],
+                    (e) => { foreground.style.backgroundColor = (<HTMLElement>(e.querySelector(".swatch"))).style.backgroundColor; }
+                )
+            );
             summary.textContent = colors.length + ' of 949 matched';
         }
         updateDisplay();
@@ -26,6 +30,77 @@ module ColorSpeak.App {
             updateDisplay(colorText.value);
         };
     });
+
+    function makeListItem(
+        element : HTMLElement, 
+        listScope: NodeList | HTMLElement[], 
+        onselected?:(element : HTMLElement)=>void
+    ) {
+        var pointerDown = false;
+
+        element.tabIndex = 0;
+        element.classList.add("listitem");
+
+        function findAllListItems() {
+            var result : HTMLElement[] = [];
+            Array.prototype.forEach.call(listScope,
+                (item) => Array.prototype.forEach.call(item.querySelectorAll(".listitem"), 
+                    (i2) => result.push(i2)
+                )
+            );
+            return result;
+        }
+
+        function select() {
+            if (!element.classList.contains("selected")) {
+                findAllListItems().forEach((elem) => elem.classList.remove("selected"));
+                element.classList.add("selected");
+                onselected && onselected(element);
+            }
+        }
+
+        element.addEventListener("keydown", (ev) => {
+            switch (ev.keyCode) {
+                case 35: // end
+                    var items = findAllListItems();
+                    items[items.length - 1].focus();
+                    ev.preventDefault();
+                    break;
+                case 36: // home
+                    var items = findAllListItems();
+                    items[0].focus();
+                    ev.preventDefault();
+                    break;
+                case 37: // left
+                case 38: // up
+                    var items = findAllListItems();
+                    var found = items.indexOf(element);
+                    if (found > 0) { items[found - 1].focus(); }
+                    ev.preventDefault();
+                    break;
+                case 39: // right
+                case 40: // down
+                    var items = findAllListItems();
+                    var found = items.indexOf(element);
+                    if (found < items.length - 1) { items[found + 1].focus(); }
+                    ev.preventDefault();
+                    break;
+            }
+        }, false);
+        element.addEventListener("focus", (ev) => {
+            select();
+        });
+        element.addEventListener("pointerdown", (ev) => { 
+            pointerDown = true;
+            element.focus();
+        }, true);
+
+        element.addEventListener("pointerup", (ev) => { 
+            if (pointerDown) {
+                select();
+            }
+        }, true);
+    };
 }
 
 module ColorSpeak {
