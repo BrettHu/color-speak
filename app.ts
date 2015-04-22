@@ -1,6 +1,6 @@
 module ColorSpeak.App {
-    function renderItem(item : ColorEntry) {
-        return "<div class='item'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode +"</div></div>";
+    function renderItem(item : ColorEntry, index : number, totalCount : number) {
+        return "<div class='item' aria-setsize='"+totalCount+"' aria-posinset='"+index + "' role='listitem'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode +"</div></div>";
     }
 
     window.addEventListener("load", function() {
@@ -11,8 +11,8 @@ module ColorSpeak.App {
 
         function updateDisplay(match? : string) {
             var colors = getColors(match);
-            var colorsForSelect = colors.reduce(function(result, item) {
-                return result + renderItem(item);
+            var colorsForSelect = colors.reduce(function(result, item, index) {
+                return result + renderItem(item, index, colors.length);
             }, "");
             colorSelect.innerHTML = colorsForSelect;
             Array.prototype.forEach.call(colorSelect.children,

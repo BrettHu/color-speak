@@ -2,8 +2,8 @@ var ColorSpeak;
 (function (ColorSpeak) {
     var App;
     (function (App) {
-        function renderItem(item) {
-            return "<div class='item'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode + "</div></div>";
+        function renderItem(item, index, totalCount) {
+            return "<div class='item' aria-setsize='" + totalCount + "' aria-posinset='" + index + "' role='listitem'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode + "</div></div>";
         }
         window.addEventListener("load", function () {
             var colorSelect = document.getElementById('colorSelect');
@@ -12,11 +12,13 @@ var ColorSpeak;
             var foreground = document.getElementById('foreground');
             function updateDisplay(match) {
                 var colors = ColorSpeak.getColors(match);
-                var colorsForSelect = colors.reduce(function (result, item) {
-                    return result + renderItem(item);
+                var colorsForSelect = colors.reduce(function (result, item, index) {
+                    return result + renderItem(item, index, colors.length);
                 }, "");
                 colorSelect.innerHTML = colorsForSelect;
-                Array.prototype.forEach.call(colorSelect.children, function (item) { return makeListItem(item, [colorSelect], function (e) { foreground.style.backgroundColor = (e.querySelector(".swatch")).style.backgroundColor; }); });
+                Array.prototype.forEach.call(colorSelect.children, function (item) { return makeListItem(item, [colorSelect], function (e) {
+                    foreground.style.backgroundColor = (e.querySelector(".swatch")).style.backgroundColor;
+                }); });
                 summary.textContent = colors.length + ' of 949 matched';
             }
             updateDisplay();
@@ -52,7 +54,7 @@ var ColorSpeak;
                         items[0].focus();
                         ev.preventDefault();
                         break;
-                    case 37: // left
+                    case 37:
                     case 38:
                         var items = findAllListItems();
                         var found = items.indexOf(element);
@@ -61,7 +63,7 @@ var ColorSpeak;
                         }
                         ev.preventDefault();
                         break;
-                    case 39: // right
+                    case 39:
                     case 40:
                         var items = findAllListItems();
                         var found = items.indexOf(element);
@@ -100,8 +102,6 @@ var ColorSpeak;
     }
     ColorSpeak.getColors = getColors;
     var rawData = [
-        // I love XKCD: http://blog.xkcd.com/2010/05/03/color-survey-results/
-        // License: http://creativecommons.org/publicdomain/zero/1.0/
         { name: "cloudy blue", hexCode: "#acc2d9" },
         { name: "dark pastel green", hexCode: "#56ae57" },
         { name: "dust", hexCode: "#b2996e" },
