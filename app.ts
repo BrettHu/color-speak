@@ -68,8 +68,10 @@ module ColorSpeak.App {
             if (!element.classList.contains("selected")) {
                 findAllListItems().forEach((elem) => {
                     elem.classList.remove("selected");
+                    element.attributes["aria-selected"] && elem.attributes.removeNamedItem("aria-selected");
                 });
                 element.classList.add("selected");
+                element.attributes["aria-selected"] = true;
                 onselected && onselected(element);
             }
         }
