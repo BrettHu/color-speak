@@ -1,6 +1,14 @@
 module ColorSpeak.App {
     function renderItem(item : ColorEntry, index : number, totalCount : number) {
-        return "<div class='item' aria-setsize='"+totalCount+"' aria-posinset='"+index + "' role='listitem'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode +"</div></div>";
+        return "<div " +
+               "    class='item' " +
+               "    aria-setsize='"+totalCount+"' " +
+               "    aria-posinset='"+index + "' " +
+               "    role='listitem'>" +
+               ""        +
+               "    <div class='swatch' style='background-color:" + item.hexCode + "'></div>" +
+               "    <div class='name'>" + item.name + " " + item.hexCode +"</div>" +
+               "</div>";
     }
 
     window.addEventListener("load", function() {
@@ -9,7 +17,12 @@ module ColorSpeak.App {
         var summary = <HTMLInputElement>document.getElementById('summary');
         var foreground = <HTMLElement>document.getElementById('foreground');
 
+        var lastDisplay = null;
+
         function updateDisplay(match? : string) {
+            if (lastDisplay === match) return;
+            lastDisplay = match;
+
             var colors = getColors(match);
             var colorsForSelect = colors.reduce(function(result, item, index) {
                 return result + renderItem(item, index, colors.length);
@@ -22,9 +35,10 @@ module ColorSpeak.App {
                     (e) => { foreground.style.backgroundColor = (<HTMLElement>(e.querySelector(".swatch"))).style.backgroundColor; }
                 )
             );
+            (<HTMLElement>(colorSelect.firstElementChild)).tabIndex = 0;
             summary.textContent = colors.length + ' of 949 matched';
         }
-        updateDisplay();
+        updateDisplay("");
 
         colorText.onkeyup = (evt) => {
             updateDisplay(colorText.value);
@@ -38,7 +52,6 @@ module ColorSpeak.App {
     ) {
         var pointerDown = false;
 
-        element.tabIndex = 0;
         element.classList.add("listitem");
 
         function findAllListItems() {
@@ -53,17 +66,25 @@ module ColorSpeak.App {
 
         function select() {
             if (!element.classList.contains("selected")) {
-                findAllListItems().forEach((elem) => elem.classList.remove("selected"));
+                findAllListItems().forEach((elem) => {
+                    elem.classList.remove("selected");
+                });
                 element.classList.add("selected");
                 onselected && onselected(element);
             }
+        }
+
+        function updateTabStops(toFocus : HTMLElement, forceFocus : boolean) {
+            findAllListItems().forEach(elem=> elem.tabIndex = -1);
+            toFocus.tabIndex = 0;
+            if (forceFocus) { toFocus.focus(); }
         }
 
         element.addEventListener("keydown", (ev) => {
             switch (ev.keyCode) {
                 case 35: // end
                     var items = findAllListItems();
-                    items[items.length - 1].focus();
+                    updateTabStops(items[items.length - 1], true);
                     ev.preventDefault();
                     break;
                 case 36: // home
@@ -75,24 +96,25 @@ module ColorSpeak.App {
                 case 38: // up
                     var items = findAllListItems();
                     var found = items.indexOf(element);
-                    if (found > 0) { items[found - 1].focus(); }
+                    if (found > 0) { updateTabStops(items[found - 1], true); }
                     ev.preventDefault();
                     break;
                 case 39: // right
                 case 40: // down
                     var items = findAllListItems();
                     var found = items.indexOf(element);
-                    if (found < items.length - 1) { items[found + 1].focus(); }
+                    if (found < items.length - 1) { updateTabStops(items[found + 1], true); }
+                    ev.preventDefault();
+                    break
+                case 32: // space
+                    select();
                     ev.preventDefault();
                     break;
             }
         }, false);
-        element.addEventListener("focus", (ev) => {
-            select();
-        });
         element.addEventListener("pointerdown", (ev) => { 
             pointerDown = true;
-            element.focus();
+            updateTabStops(element, true);
         }, true);
 
         element.addEventListener("pointerup", (ev) => { 

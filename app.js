@@ -3,14 +3,18 @@ var ColorSpeak;
     var App;
     (function (App) {
         function renderItem(item, index, totalCount) {
-            return "<div class='item' aria-setsize='" + totalCount + "' aria-posinset='" + index + "' role='listitem'><div class='swatch' style='background-color:" + item.hexCode + "'></div><div class='name'>" + item.name + " " + item.hexCode + "</div></div>";
+            return "<div " + "    class='item' " + "    aria-setsize='" + totalCount + "' " + "    aria-posinset='" + index + "' " + "    role='listitem'>" + "" + "    <div class='swatch' style='background-color:" + item.hexCode + "'></div>" + "    <div class='name'>" + item.name + " " + item.hexCode + "</div>" + "</div>";
         }
         window.addEventListener("load", function () {
             var colorSelect = document.getElementById('colorSelect');
             var colorText = document.getElementById('colorText');
             var summary = document.getElementById('summary');
             var foreground = document.getElementById('foreground');
+            var lastDisplay = null;
             function updateDisplay(match) {
+                if (lastDisplay === match)
+                    return;
+                lastDisplay = match;
                 var colors = ColorSpeak.getColors(match);
                 var colorsForSelect = colors.reduce(function (result, item, index) {
                     return result + renderItem(item, index, colors.length);
@@ -19,16 +23,16 @@ var ColorSpeak;
                 Array.prototype.forEach.call(colorSelect.children, function (item) { return makeListItem(item, [colorSelect], function (e) {
                     foreground.style.backgroundColor = (e.querySelector(".swatch")).style.backgroundColor;
                 }); });
+                (colorSelect.firstElementChild).tabIndex = 0;
                 summary.textContent = colors.length + ' of 949 matched';
             }
-            updateDisplay();
+            updateDisplay("");
             colorText.onkeyup = function (evt) {
                 updateDisplay(colorText.value);
             };
         });
         function makeListItem(element, listScope, onselected) {
             var pointerDown = false;
-            element.tabIndex = 0;
             element.classList.add("listitem");
             function findAllListItems() {
                 var result = [];
@@ -37,16 +41,25 @@ var ColorSpeak;
             }
             function select() {
                 if (!element.classList.contains("selected")) {
-                    findAllListItems().forEach(function (elem) { return elem.classList.remove("selected"); });
+                    findAllListItems().forEach(function (elem) {
+                        elem.classList.remove("selected");
+                    });
                     element.classList.add("selected");
                     onselected && onselected(element);
+                }
+            }
+            function updateTabStops(toFocus, forceFocus) {
+                findAllListItems().forEach(function (elem) { return elem.tabIndex = -1; });
+                toFocus.tabIndex = 0;
+                if (forceFocus) {
+                    toFocus.focus();
                 }
             }
             element.addEventListener("keydown", function (ev) {
                 switch (ev.keyCode) {
                     case 35:
                         var items = findAllListItems();
-                        items[items.length - 1].focus();
+                        updateTabStops(items[items.length - 1], true);
                         ev.preventDefault();
                         break;
                     case 36:
@@ -59,7 +72,7 @@ var ColorSpeak;
                         var items = findAllListItems();
                         var found = items.indexOf(element);
                         if (found > 0) {
-                            items[found - 1].focus();
+                            updateTabStops(items[found - 1], true);
                         }
                         ev.preventDefault();
                         break;
@@ -68,18 +81,19 @@ var ColorSpeak;
                         var items = findAllListItems();
                         var found = items.indexOf(element);
                         if (found < items.length - 1) {
-                            items[found + 1].focus();
+                            updateTabStops(items[found + 1], true);
                         }
+                        ev.preventDefault();
+                        break;
+                    case 32:
+                        select();
                         ev.preventDefault();
                         break;
                 }
             }, false);
-            element.addEventListener("focus", function (ev) {
-                select();
-            });
             element.addEventListener("pointerdown", function (ev) {
                 pointerDown = true;
-                element.focus();
+                updateTabStops(element, true);
             }, true);
             element.addEventListener("pointerup", function (ev) {
                 if (pointerDown) {
