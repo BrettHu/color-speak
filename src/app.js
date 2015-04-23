@@ -1,5 +1,8 @@
-module ColorSpeak.App {
-    function renderItem(item : ColorEntry, index : number, totalCount : number) {
+var ColorSpeak;
+(function (ColorSpeak) {
+    var App;
+    (function (App) {
+        function renderItem(item, index, totalCount) {
         return "<div " +
                "    class='item' " +
                "    aria-setsize='"+totalCount+"' " +
@@ -9,142 +12,126 @@ module ColorSpeak.App {
                "    <div class='swatch' style='background-color:" + item.hexCode + "'></div>" +
                "    <div class='name'>" + item.name + " " + item.hexCode +"</div>" +
                "</div>";
-    }
-
-    window.addEventListener("load", function() {
-        var colorSelect = <HTMLSelectElement>document.getElementById('colorSelect');
-        var colorText = <HTMLInputElement>document.getElementById('colorText');
-        var summary = <HTMLInputElement>document.getElementById('summary');
-        var foreground = <HTMLElement>document.getElementById('foreground');
-
-        var lastDisplay = null;
-
-        function updateDisplay(match? : string) {
-            if (lastDisplay === match) return;
-            lastDisplay = match;
-
-            var colors = getColors(match);
-            var colorsForSelect = colors.reduce(function(result, item, index) {
-                return result + renderItem(item, index, colors.length);
-            }, "");
-            colorSelect.innerHTML = colorsForSelect;
-            Array.prototype.forEach.call(colorSelect.children,
-                (item) => makeListItem(
-                    item,
-                    [colorSelect],
-                    (e) => { foreground.style.backgroundColor = (<HTMLElement>(e.querySelector(".swatch"))).style.backgroundColor; }
-                )
-            );
-            (<HTMLElement>(colorSelect.firstElementChild)).tabIndex = 0;
-            summary.textContent = colors.length + ' of 949 matched';
         }
-        updateDisplay("");
-
-        colorText.onkeyup = (evt) => {
-            updateDisplay(colorText.value);
-        };
-    });
-
-    function makeListItem(
-        element : HTMLElement, 
-        listScope: NodeList | HTMLElement[], 
-        onselected?:(element : HTMLElement)=>void
-    ) {
-        var pointerDown = false;
-
-        element.classList.add("listitem");
-
-        function findAllListItems() {
-            var result : HTMLElement[] = [];
-            Array.prototype.forEach.call(listScope,
-                (item) => Array.prototype.forEach.call(item.querySelectorAll(".listitem"), 
-                    (i2) => result.push(i2)
-                )
-            );
-            return result;
-        }
-
-        function select() {
-            if (!element.classList.contains("selected")) {
-                findAllListItems().forEach((elem) => {
-                    elem.classList.remove("selected");
-                    element.attributes["aria-selected"] && elem.attributes.removeNamedItem("aria-selected");
-                });
-                element.classList.add("selected");
-                element.attributes["aria-selected"] = true;
-                onselected && onselected(element);
+        window.addEventListener("load", function () {
+            var colorSelect = document.getElementById('colorSelect');
+            var colorText = document.getElementById('colorText');
+            var summary = document.getElementById('summary');
+            var foreground = document.getElementById('foreground');
+            var lastDisplay = null;
+            function updateDisplay(match) {
+                if (lastDisplay === match)
+                    return;
+                lastDisplay = match;
+                var colors = ColorSpeak.getColors(match);
+                var colorsForSelect = colors.reduce(function (result, item, index) {
+                    return result + renderItem(item, index, colors.length);
+                }, "");
+                colorSelect.innerHTML = colorsForSelect;
+                Array.prototype.forEach.call(colorSelect.children, function (item) { return makeListItem(item, [colorSelect], function (e) {
+                    foreground.style.backgroundColor = (e.querySelector(".swatch")).style.backgroundColor;
+                }); });
+                (colorSelect.firstElementChild).tabIndex = 0;
+                summary.textContent = colors.length + ' of 949 matched';
             }
-        }
-
-        function updateTabStops(toFocus : HTMLElement, forceFocus : boolean) {
-            findAllListItems().forEach(elem=> elem.tabIndex = -1);
-            toFocus.tabIndex = 0;
-            if (forceFocus) { toFocus.focus(); }
-        }
-
-        element.addEventListener("keydown", (ev) => {
-            switch (ev.keyCode) {
-                case 35: // end
-                    var items = findAllListItems();
-                    updateTabStops(items[items.length - 1], true);
-                    ev.preventDefault();
-                    break;
-                case 36: // home
-                    var items = findAllListItems();
-                    items[0].focus();
-                    ev.preventDefault();
-                    break;
-                case 37: // left
-                case 38: // up
-                    var items = findAllListItems();
-                    var found = items.indexOf(element);
-                    if (found > 0) { updateTabStops(items[found - 1], true); }
-                    ev.preventDefault();
-                    break;
-                case 39: // right
-                case 40: // down
-                    var items = findAllListItems();
-                    var found = items.indexOf(element);
-                    if (found < items.length - 1) { updateTabStops(items[found + 1], true); }
-                    ev.preventDefault();
-                    break
-                case 32: // space
+            updateDisplay("");
+            colorText.onkeyup = function (evt) {
+                updateDisplay(colorText.value);
+            };
+        });
+        function makeListItem(element, listScope, onselected) {
+            var pointerDown = false;
+            element.classList.add("listitem");
+            function findAllListItems() {
+                var result = [];
+                Array.prototype.forEach.call(listScope, 
+                    function (item) { 
+                        return Array.prototype.forEach.call(item.querySelectorAll(".listitem"), 
+                            function (i2) { return result.push(i2); }
+                        ); 
+                    }
+                );
+                return result;
+            }
+            function select() {
+                if (!element.classList.contains("selected")) {
+                    findAllListItems().forEach(function (elem) {
+                        elem.classList.remove("selected");
+                        element.attributes["aria-selected"] && elem.attributes.removeNamedItem("aria-selected");
+                    });
+                    element.classList.add("selected");
+                    element.attributes["aria-selected"] = true;
+                    onselected && onselected(element);
+                }
+            }
+            function updateTabStops(toFocus, forceFocus) {
+                findAllListItems().forEach(function (elem) { return elem.tabIndex = -1; });
+                toFocus.tabIndex = 0;
+                if (forceFocus) {
+                    toFocus.focus();
+                }
+            }
+            element.addEventListener("keydown", function (ev) {
+                switch (ev.keyCode) {
+                    case 35:
+                        var items = findAllListItems();
+                        updateTabStops(items[items.length - 1], true);
+                        ev.preventDefault();
+                        break;
+                    case 36:
+                        var items = findAllListItems();
+                        items[0].focus();
+                        ev.preventDefault();
+                        break;
+                    case 37:
+                    case 38:
+                        var items = findAllListItems();
+                        var found = items.indexOf(element);
+                        if (found > 0) {
+                            updateTabStops(items[found - 1], true);
+                        }
+                        ev.preventDefault();
+                        break;
+                    case 39:
+                    case 40:
+                        var items = findAllListItems();
+                        var found = items.indexOf(element);
+                        if (found < items.length - 1) {
+                            updateTabStops(items[found + 1], true);
+                        }
+                        ev.preventDefault();
+                        break;
+                    case 32:
+                        select();
+                        ev.preventDefault();
+                        break;
+                }
+            }, false);
+            element.addEventListener("pointerdown", function (ev) {
+                pointerDown = true;
+                updateTabStops(element, true);
+            }, true);
+            element.addEventListener("pointerup", function (ev) {
+                if (pointerDown) {
                     select();
-                    ev.preventDefault();
-                    break;
-            }
-        }, false);
-        element.addEventListener("pointerdown", (ev) => { 
-            pointerDown = true;
-            updateTabStops(element, true);
-        }, true);
-
-        element.addEventListener("pointerup", (ev) => { 
-            if (pointerDown) {
-                select();
-            }
-        }, true);
-    };
-}
-
-module ColorSpeak {
-    export function getColors(match? : string) {
+                }
+            }, true);
+        }
+        ;
+    })(App = ColorSpeak.App || (ColorSpeak.App = {}));
+})(ColorSpeak || (ColorSpeak = {}));
+var ColorSpeak;
+(function (ColorSpeak) {
+    function getColors(match) {
         if (match) {
-            return rawData.filter(item=> item.name.indexOf(match.toLowerCase()) != -1);
+            return rawData.filter(function (item) { return item.name.indexOf(match.toLowerCase()) != -1; });
         }
         else {
             return rawData;
         }
     }
-
-    export interface ColorEntry {
-        name : string;
-        hexCode: string;
-    }
-
-    var rawData : ColorEntry[] = [
-        // I love XKCD: http://blog.xkcd.com/2010/05/03/color-survey-results/
-        // License: http://creativecommons.org/publicdomain/zero/1.0/
+    ColorSpeak.getColors = getColors;
+    var rawData = [
         { name: "cloudy blue", hexCode: "#acc2d9" },
         { name: "dark pastel green", hexCode: "#56ae57" },
         { name: "dust", hexCode: "#b2996e" },
@@ -1095,5 +1082,4 @@ module ColorSpeak {
         { name: "green", hexCode: "#15b01a" },
         { name: "purple", hexCode: "#7e1e9c" }
     ];
-}
-
+})(ColorSpeak || (ColorSpeak = {}));
