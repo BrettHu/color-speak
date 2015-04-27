@@ -4,10 +4,7 @@ var ColorSpeak;
     (function (App) {
         function renderItem(item, index, totalCount) {
         return "<div " +
-               "    class='item' " +
-               "    aria-setsize='"+totalCount+"' " +
-               "    aria-posinset='"+index + "' " +
-               "    role='listitem'>" +
+               "    class='item' >" +
                ""        +
                "    <div class='swatch' style='background-color:" + item.hexCode + "'></div>" +
                "    <div class='name'>" + item.name + " " + item.hexCode +"</div>" +
@@ -57,10 +54,8 @@ var ColorSpeak;
                 if (!element.classList.contains("selected")) {
                     findAllListItems().forEach(function (elem) {
                         elem.classList.remove("selected");
-                        elem.setAttribute("aria-selected", "false");                    
                     });
                     element.classList.add("selected");
-                    element.setAttribute("aria-selected", "true");
                     onselected && onselected(element);
                 }
             }
