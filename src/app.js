@@ -31,7 +31,7 @@ var ColorSpeak;
                 Array.prototype.forEach.call(colorSelect.children, function (item) { return makeListItem(item, [colorSelect], function (e) {
                     foreground.style.backgroundColor = (e.querySelector(".swatch")).style.backgroundColor;
                 }); });
-                (colorSelect.firstElementChild).tabIndex = 0;
+                if (colorSelect.firstElementChild) colorSelect.firstElementChild.tabIndex = 0;
                 summary.textContent = colors.length + ' of 949 matched';
             }
             updateDisplay("");
@@ -66,9 +66,12 @@ var ColorSpeak;
             }
             function updateTabStops(toFocus, forceFocus) {
                 findAllListItems().forEach(function (elem) { return elem.tabIndex = -1; });
-                toFocus.tabIndex = 0;
-                if (forceFocus) {
-                    toFocus.focus();
+                if (toFocus)
+                {
+                    toFocus.tabIndex = 0;
+                    if (forceFocus) {
+                        toFocus.focus();
+                    }
                 }
             }
             element.addEventListener("keydown", function (ev) {
