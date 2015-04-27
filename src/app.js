@@ -57,10 +57,10 @@ var ColorSpeak;
                 if (!element.classList.contains("selected")) {
                     findAllListItems().forEach(function (elem) {
                         elem.classList.remove("selected");
-                        element.attributes["aria-selected"] && elem.attributes.removeNamedItem("aria-selected");
+                        elem.setAttribute("aria-selected", "false");                    
                     });
                     element.classList.add("selected");
-                    element.attributes["aria-selected"] = true;
+                    element.setAttribute("aria-selected", "true");
                     onselected && onselected(element);
                 }
             }
